@@ -1,0 +1,43 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "AssetRegistryModule.h"
+
+struct GowObject
+{
+	UStaticMesh*                   Mesh;
+	UInstancedStaticMeshComponent* InstancedComponent;
+
+	UTexture* Diffuse;
+	UTexture* Normal;
+	UTexture* Gloss;
+	UTexture* Ao;
+};
+
+class GowSceneBuilder
+{
+public:
+	GowSceneBuilder();
+	~GowSceneBuilder();
+
+	void Build();
+
+private:
+	GowObject PopulateGowObject(const TArray<FAssetData>& AssetList);
+	void PlaceObjectInScene(const GowObject& Object);
+
+	UMaterialInterface* CreateOrGetMaterialInstance(const GowObject& Object);
+
+	FTransform ConvertTransform(const FTransform& TransRH);
+
+	UObject*  FindAsset(const TArray<FAssetData>& AssetList, const FString& Name);
+	UTexture* FindTexture(const TArray<FAssetData>& AssetList, const FString& Name);
+	FString   ObjectPathToName(const FString& ObjectPath);
+	void      InitMaterialTemplate();
+
+private:
+	UMaterial*                         GowMaterialTemplate = nullptr;
+	TMap<FString, UMaterialInterface*> MaterialMap;
+	TArray<UObject*>                   ObjectsToSync;
+};
+
